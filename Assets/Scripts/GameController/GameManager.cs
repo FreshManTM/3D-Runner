@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class GameManager : MonoBehaviour
@@ -50,7 +51,7 @@ public class GameManager : MonoBehaviour
     public void Death()
     {
         stateMachine.ChangeState(new DeathState(), deathCanvas);
-        PlayFabManager.Instance.SendLeaderboard(score);
+        LeaderboardManager.Instance.SendLeaderboard(score);
     }
 
     //Buttons
@@ -68,6 +69,10 @@ public class GameManager : MonoBehaviour
         stateMachine.ChangeState(new GameState(), null);
     }
 
+    public void LogOutButton()
+    {
+        SceneManager.LoadScene(0);
+    }
     public void ExitButton()
     {
         Application.Quit();
