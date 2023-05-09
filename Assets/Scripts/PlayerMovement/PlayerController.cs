@@ -172,11 +172,12 @@ namespace PlayerMovement
         {
             yield return new WaitForSeconds(4f);
 
-            if (speed < maxSpeed)
+            if (speed < maxSpeed && !isDead)
             {
                 speed += 1;
                 StartCoroutine(IncreaseSpeed());
             }
+            yield return null;
         }
 
         //Player's death
@@ -194,6 +195,7 @@ namespace PlayerMovement
         {
             animator.SetBool("isDead", false);
             isDead = false;
+            StartCoroutine(IncreaseSpeed());
             StartCoroutine(UnInteractable());
         }
 
