@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace PlayerMovement
@@ -7,31 +6,37 @@ namespace PlayerMovement
     public class PlayerController : MonoBehaviour
     {
         CharacterController controller;
-        Vector3 dir;
+        Animator animator;
 
+        Movable movementStrategy;
+        
         [SerializeField] public float speed;
         [SerializeField] public float maxSpeed;
 
-        [SerializeField] int currentLane;
+        int currentLane;
         [SerializeField] float lineDistance;
 
         [SerializeField] float jumpForce;
-        [SerializeField] public float gravity;
-        [SerializeField] bool isJumping;
+        [SerializeField] float gravity;
 
         [SerializeField] float slideDuration;
         [SerializeField] float slideSpeed;
-        [SerializeField]bool isSliding;
 
+
+        [SerializeField] Material defaultMat;
+        [SerializeField] Material transparentMat;
+        Vector3 dir;
         Vector3 targetPosition;
-        private Movable movementStrategy;
 
-        [SerializeField] bool isDead;
-        Animator animator;
+        bool isJumping;
+        bool isSliding;
+        bool isDead;
+        bool isInteractable;
 
-        Vector3 resumePos;
         void Start()
         {
+            currentLane = 1;
+            isInteractable = true;
             controller = GetComponent<CharacterController>();
             animator = GetComponentInChildren<Animator>();
             StartCoroutine(IncreaseSpeed());
@@ -39,24 +44,25 @@ namespace PlayerMovement
 
         void Update()
         {
-            if (controller.isGrounded)
-                isJumping = false;
-            else
-                isJumping = true;
             if(!isDead)
-                InputController();
+                InputControl();
+
             targetPosition = transform.position.z * transform.forward + transform.position.y * transform.up;
+            //Change the lanes 
             if (currentLane == 0)
                 targetPosition += Vector3.left * lineDistance;
             else if (currentLane == 2)
                 targetPosition += Vector3.right * lineDistance;
-
-            if (transform.position == targetPosition)
-                return;
         }
 
 
         private void FixedUpdate()
+        {
+            MovePlayer();
+        }
+
+        //Move the player in the set direction
+        void MovePlayer()
         {
             if (!isDead)
             {
@@ -71,7 +77,9 @@ namespace PlayerMovement
             // Move the player
             controller.Move(dir * Time.deltaTime);
         }
-        private void InputController()
+
+        //Control the player's input
+        private void InputControl()
         {
             if (Input.GetKeyDown(KeyCode.LeftArrow) || SwipeController.swipeLeft)
             {
@@ -107,6 +115,7 @@ namespace PlayerMovement
             }
         }
 
+        //Disable jumnping after player hit the ground
         IEnumerator DisableJumping()
         {
             yield return new WaitForSeconds(.1f);
@@ -124,6 +133,8 @@ namespace PlayerMovement
 
             yield return null;
         }
+        
+        //Slide
         IEnumerator Slide()
         {
             isSliding = true;
@@ -138,6 +149,8 @@ namespace PlayerMovement
 
             yield return null;
         }
+
+        //Increase player's height after the slide
         IEnumerator IncreasePlayerHeight()
         {
             if(controller.height < 2)
@@ -153,6 +166,8 @@ namespace PlayerMovement
             }
             yield return null;
         }
+
+        //Increase player speed per time
         IEnumerator IncreaseSpeed()
         {
             yield return new WaitForSeconds(4f);
@@ -164,12 +179,46 @@ namespace PlayerMovement
             }
         }
 
+        //Player's death
         public void Death()
         {
-            resumePos = transform.position;
-            isDead = true;
             dir = Vector3.zero;
+            isDead = true;
             animator.SetBool("isDead", true);
+            isInteractable = false;
+
+        }
+
+        //Resume player's position after watching the add
+        public void ResumePosition()
+        {
+            animator.SetBool("isDead", false);
+            isDead = false;
+            StartCoroutine(UnInteractable());
+        }
+
+        //Disable interact with the obstacles and change player's material
+        IEnumerator UnInteractable()
+        {
+            SkinnedMeshRenderer[] renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+            foreach (var renderer in renderers)
+            {
+                renderer.material = transparentMat;
+            }
+            yield return new WaitForSeconds(3);
+
+            foreach (var renderer in renderers)
+            {
+                renderer.material = defaultMat;
+            }
+            isInteractable = true;
+            yield return null;
+
+        }
+        //Get bool if player is interactable
+        public bool IsInteractable()
+        {
+            return isInteractable;
         }
     }
 }
