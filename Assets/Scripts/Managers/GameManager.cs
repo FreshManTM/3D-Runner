@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.Diagnostics;
+using PlayerMovement;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,7 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject MenuCanvas;
     [SerializeField] GameObject DeathCanvas;
     [SerializeField] GameObject StartScreenCanvas;
-    [SerializeField] GameObject deathCanvas;
+    [SerializeField] GameObject AdsCanvas;
     int score;
     int coins;
 
@@ -48,7 +50,7 @@ public class GameManager : MonoBehaviour
     }
     public void Death()
     {
-        stateMachine.ChangeState(new DeathState(), deathCanvas);
+        stateMachine.ChangeState(new DeathState(), DeathCanvas);
         LeaderboardManager.Instance.SendLeaderboard(score);
     }
 
@@ -59,7 +61,13 @@ public class GameManager : MonoBehaviour
     }
     public void ShowAdButton()
     {
-        stateMachine.ChangeState(new AdsState(), null);
+        stateMachine.ChangeState(new AdsState(), AdsCanvas);
+    }
+    public void CloseAdButton()
+    {
+        StateMachine stateMachine = new StateMachine();
+        stateMachine.ChangeState(new GameState(), null);
+        player.GetComponent<PlayerController>().ResumePosition();
     }
     public void RestartButton()
     {

@@ -2,10 +2,17 @@ using UnityEngine;
 
 public class AdsState : IState
 {
+    GameObject _canvas;
     public void Enter(GameObject canvas)
     {
-        AdsManager.Instance.ShowAd();
+        _canvas = canvas;
+        _canvas.SetActive(true);
+        //Enable for Android Build
+        //AdsManager.Instance.ShowAd();
     }
 
-    public void Exit() { }
+    public void Exit() 
+    {
+        _canvas.SetActive(false);
+    }
 }
