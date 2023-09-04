@@ -5,7 +5,6 @@ using UnityEngine;
 public class TileGenerator : MonoBehaviour
 {
     [SerializeField] GameObject[] tilesPrefab;
-    [SerializeField] GameObject defaultTile;
 
     GameObject tileToSpawn;
     bool isDelay;
@@ -20,10 +19,12 @@ public class TileGenerator : MonoBehaviour
     private void Start()
     {
         tileSpawnPos = 0;
-        tileToSpawn = defaultTile;
         StartCoroutine(StartSpawnDelay());
         isDelay = true;
-        ObjectPool.Instance.PreLoad(tileToSpawn, 5);
+        foreach (GameObject tile in tilesPrefab)
+        {
+            ObjectPool.Instance.PreLoad(tile, 3);
+        }
         for (int i = 0; i <= startTiles; i++)
         {
             SpawnTile();
@@ -47,9 +48,9 @@ public class TileGenerator : MonoBehaviour
     void SpawnTile()
     {
         if (isDelay)
-            tileToSpawn = defaultTile;
+            tileToSpawn = tilesPrefab[0];
         else
-            tileToSpawn = tilesPrefab[Random.Range(0, tilesPrefab.Length)];
+            tileToSpawn = tilesPrefab[Random.Range(1, tilesPrefab.Length)];
 
         GameObject nextTile =  ObjectPool.Instance.Spawn(tileToSpawn, transform.forward * tileSpawnPos, Quaternion.identity);
         activeTiles.Add(nextTile);

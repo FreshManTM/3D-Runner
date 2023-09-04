@@ -6,7 +6,7 @@ public class AdsManager : MonoBehaviour,IUnityAdsInitializationListener ,IUnityA
 {
     public static AdsManager Instance;
 
-    string androidGameID = "5272765";
+    string androidGameID = "5278622";
     string androidAdID = "Rewarded_Android";
 
     [SerializeField] PlayerController player;
@@ -14,6 +14,7 @@ public class AdsManager : MonoBehaviour,IUnityAdsInitializationListener ,IUnityA
     private void Awake()
     {
         Instance = this;
+        AdsInitialize();
     }
 
     public void AdsInitialize()

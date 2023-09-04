@@ -15,12 +15,6 @@ public class RegistrationManager : MonoBehaviour
 
     public void Register()
     {
-        if (passwordInput.text.Length < 6)
-        {
-            messageText.text = "Password too short!";
-            return;
-        }
-
         if(passwordInput.text == repeatPasswordInput.text)
         {
             var request = new RegisterPlayFabUserRequest
@@ -31,7 +25,6 @@ public class RegistrationManager : MonoBehaviour
                 RequireBothUsernameAndEmail = false
             };
             PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
-            SceneManager.LoadScene(1);
         }
         else
         {
@@ -57,7 +50,14 @@ public class RegistrationManager : MonoBehaviour
 
     void OnError(PlayFabError error)
     {
-        messageText.text = ("Error while logging in/creating account!");
+        if (passwordInput.text.Length < 6)
+        {
+            messageText.text = "Password must have at least 6 symbols";
+        }
+        else
+        {
+            messageText.text = (error.ErrorMessage);
+        }
         Debug.Log(error.GenerateErrorReport());
     }
 }

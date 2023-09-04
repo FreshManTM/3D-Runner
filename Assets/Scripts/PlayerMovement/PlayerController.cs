@@ -47,18 +47,18 @@ namespace PlayerMovement
             if(!isDead)
                 InputControl();
 
-            targetPosition = transform.position.z * transform.forward + transform.position.y * transform.up;
-            //Change the lanes 
-            if (currentLane == 0)
-                targetPosition += Vector3.left * lineDistance;
-            else if (currentLane == 2)
-                targetPosition += Vector3.right * lineDistance;
         }
 
 
         private void FixedUpdate()
         {
             MovePlayer();
+            targetPosition = transform.position.z * transform.forward + transform.position.y * transform.up;
+            //Change the lanes 
+            if (currentLane == 0)
+                targetPosition += Vector3.left * lineDistance;
+            else if (currentLane == 2)
+                targetPosition += Vector3.right * lineDistance;
         }
 
         //Move the player in the set direction
